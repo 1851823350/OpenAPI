@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 /**
- * 查询请求
+ * 封装 查询请求参数 的实体类
  *
  * @author yupi
  */

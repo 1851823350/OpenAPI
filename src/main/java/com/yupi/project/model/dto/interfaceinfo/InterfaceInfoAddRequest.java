@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 创建请求
+ * 封装 添加请求 的实体类
  *
  * @TableName product
  */
