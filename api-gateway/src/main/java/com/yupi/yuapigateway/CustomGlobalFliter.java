@@ -1,16 +1,14 @@
 package com.yupi.yuapigateway;
 
-import cn.hutool.crypto.asymmetric.Sign;
 import com.yuapi.yuapicommon.model.entity.InterfaceInfo;
 import com.yuapi.yuapicommon.model.entity.User;
 import com.yuapi.yuapicommon.service.InnerInterfaceInfoService;
 import com.yuapi.yuapicommon.service.InnerUserInterfaceInfoService;
 import com.yuapi.yuapicommon.service.InnerUserService;
-import com.yupi.yuapiclientsdk.utils.SignUtil;
-import io.swagger.models.Response;
+import com.yupi.yuapiclientsdk.utils.SignUtils;
+import com.yupi.yuapigateway.manager.RedisLimiterManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -28,6 +26,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +40,9 @@ import java.util.List;
 @Slf4j
 @Component
 public class CustomGlobalFliter  implements GlobalFilter, Ordered {
+
+    @Resource
+    private RedisLimiterManager redisLimiterManager;
 
     private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
     private static final String INTERFACE_HOST = "http://localhost:8123";
@@ -98,9 +100,12 @@ public class CustomGlobalFliter  implements GlobalFilter, Ordered {
             return handleNoAuth(response);
         }
 
-        //从数据库中查询secretKey
+        //限流器(利用用户唯一标识accessKey)
+        redisLimiterManager.doRateLimit("doAPI_" + accessKey);
+
+        //从数据库中查询secretKey，重新生成serverSign进行校验
         String secretKey = user.getSecretKey();
-        String serverSign = SignUtil.getSign(body, secretKey);
+        String serverSign = SignUtils.genSign(body, secretKey);
         if(!sign.contains(serverSign)){
             return handleNoAuth(response);
         }

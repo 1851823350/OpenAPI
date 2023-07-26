@@ -10,21 +10,13 @@ spring:
           uri: http://localhost:8123
           predicates:
             - Path=/api/**
-#        - id: add_request_header_route
-#          uri: http://localhost:8123
-#          predicates:
-#            - Path=/api/**
-#          filters:
-#            - AddRequestHeader=yupi, swag
-#            - AddRequestParameter=name, dog
-#            - name: CircuitBreaker
-#              args:
-#                name: myCircuitBreaker
-#                fallbackUri: forward:/fallback
-#        - id: yupi-fallback
-#          uri: https://yupi.icu
-#          predicates:
-#            - Path=/fallback
+  main:
+    web-application-type: reactive
+  redis:
+    port: 6379
+    database: 1
+    host: localhost
+    connect-timeout: 5000
 logging:
   level:
     org:
@@ -40,3 +32,4 @@ dubbo:
   registry:
     id: nacaos-registry
     address: nacos://localhost:8848
+

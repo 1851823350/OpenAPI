@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>yuapi-gateway</module>
-        <module>yupi-interface</module>
-        <module>yuapi-common</module>
+        <module>api-gateway</module>
+        <module>api-interface</module>
+        <module>api-common</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
